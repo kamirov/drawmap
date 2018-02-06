@@ -8,8 +8,8 @@ import { AgmCoreModule } from '@agm/core';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { MapComponent } from './map/map.component';
-import { MapControlsComponent } from './map-controls/map-controls.component';
-import { ShareComponent } from './share/share.component';
+import { MapControlsComponent } from './map/map-controls/map-controls.component';
+import { ShareComponent } from './map/share/share.component';
 import { FooterComponent } from './footer/footer.component';
 
 

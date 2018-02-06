@@ -1,3 +1,8 @@
-<p>
-  map works!
-</p>
+<dm-map-controls></dm-map-controls>
+
+<!-- map -->
+<agm-map [latitude]="lat" [longitude]="lng">
+  <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
+</agm-map>
+
+<dm-share></dm-share>
