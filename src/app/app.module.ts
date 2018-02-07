@@ -11,6 +11,7 @@ import { MapComponent } from './map/map.component';
 import { MapControlsComponent } from './map/map-controls/map-controls.component';
 import { ShareComponent } from './map/share/share.component';
 import { FooterComponent } from './footer/footer.component';
+import { MapService } from "./map/map.service";
 
 
 @NgModule({
@@ -30,7 +31,9 @@ import { FooterComponent } from './footer/footer.component';
       apiKey: 'AIzaSyBq7O9NfMbfQxawyUOjDDXi2ie--Cdje3s'   // Should this really be public? Probably no
     })
   ],
-  providers: [],
+  providers: [
+    MapService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

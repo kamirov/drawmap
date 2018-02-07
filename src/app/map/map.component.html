@@ -1,4 +1,7 @@
-<dm-map-controls></dm-map-controls>
+<dm-map-controls
+  [controls]="controls"
+  (controlsChange)="handleControlsChange($event)"
+></dm-map-controls>
 
 <!-- map -->
 <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom"></agm-map>
