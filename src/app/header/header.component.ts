@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { waypointsCount} from "../app.constants";
 
 @Component({
   selector: 'dm-header',
@@ -6,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+
+  waypointsCount: number = waypointsCount;
 
   constructor() { }
 
