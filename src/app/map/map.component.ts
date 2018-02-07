@@ -10,18 +10,36 @@ import {MapControls} from "./map-controls/map-controls";
 })
 export class MapComponent implements OnInit {
 
-  lat: number = 43.6532;
-  lng: number = -79.3832;
-  zoom: number = 14;
+  lat: number;
+  lng: number;
+  zoom: number;
   controls: MapControls;
 
   constructor(private mapService: MapService) { }
 
   ngOnInit() {
+    this.lat = 43.6532;
+    this.lng = -79.3832;
+    this.zoom = 14;
+
     this.controls = <MapControls>{
       drawEnabled: false,
       routeType: routeTypes.walking
     }
+
+    this.mapService.init('map', this.lat, this.lng, this.zoom)
+    //
+    // this.points = [{
+    //   lat: this.lat,
+    //   lng: this.lng
+    // }, {
+    //   lat: this.lat+1,
+    //   lng: this.lng+1
+    // }, {
+    //   lat: this.lat-1,
+    //   lng: this.lng-1
+    // }]
+
   }
 
   handleControlsChange(event) {
@@ -42,12 +60,11 @@ export class MapComponent implements OnInit {
 
   private enableDraw() {
     this.controls.drawEnabled = true;
-
-    console.log('enabling', this.controls);
-    // this.mapService.enableDraw();
+    this.mapService.enableDraw();
   }
 
   private disableDraw() {
     this.controls.drawEnabled = false;
+    this.mapService.disableDraw();
   }
 }

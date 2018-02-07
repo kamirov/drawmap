@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { NgModule } from '@angular/core';
-import { AgmCoreModule } from '@agm/core';
+import {AgmCoreModule, GoogleMapsAPIWrapper, LatLng} from '@agm/core';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -32,7 +32,7 @@ import { MapService } from "./map/map.service";
     })
   ],
   providers: [
-    MapService
+    MapService, GoogleMapsAPIWrapper
   ],
   bootstrap: [AppComponent]
 })

@@ -9,3 +9,11 @@ export enum mapControlEvents {
 export enum routeTypes {
   walking = 'walking',
 }
+
+export enum mapStates {
+  empty = 'empty',
+  drawable = 'drawable',
+  drawing = 'drawing',
+  routing = 'routing',
+  routed = 'routed'
+}
