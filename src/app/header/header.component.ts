@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { waypointsCount} from "../app.constants";
+import { maxWaypointsCount} from "../app.constants";
 
 @Component({
   selector: 'dm-header',
@@ -8,7 +8,7 @@ import { waypointsCount} from "../app.constants";
 })
 export class HeaderComponent implements OnInit {
 
-  waypointsCount: number = waypointsCount;
+  maxWaypointsCount: number = maxWaypointsCount;
 
   constructor() { }
 

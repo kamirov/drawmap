@@ -1,4 +1,4 @@
-export const waypointsCount: number = 23;
+export const maxWaypointsCount: number = 23;
 
 export enum mapControlEvents {
   toggleDraw = 'toggleDraw',
