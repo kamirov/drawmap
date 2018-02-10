@@ -28,7 +28,9 @@ export class MapService {
   async init(elementId, lat, lng, zoom) {
     let mapOptions: MapOptions = {
       center: <LatLng>{lat, lng},
-      zoom: zoom
+      zoom: zoom,
+      clickableIcons: false,
+      draggable: false
     };
 
     this.googleMapsAPIWrapper.createMap(document.getElementById(elementId), mapOptions);
@@ -100,7 +102,7 @@ export class MapService {
       if (status === 'OK') {
         directionsDisplay.setDirections(response);
       } else {
-        window.alert('Directions request failed due to ' + status);
+        window.alert('Directions request failed due to ' + status)
       }
     });
 
@@ -108,6 +110,7 @@ export class MapService {
     this.line = null;
 
     this.mapState = mapStates.routed;
+    this.disableDraw();
   }
 
   private async getWaypoints() {
@@ -129,7 +132,5 @@ export class MapService {
     if (this.listeners.mousemove) {
       this.listeners.mousemove.remove();
     }
-
-    console.log(this.listeners);
   }
 }
