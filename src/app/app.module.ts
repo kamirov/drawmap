@@ -1,9 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { NgModule } from '@angular/core';
+import {MatButtonModule, MatCheckboxModule} from '@angular/material';
+
 import {AgmCoreModule, GoogleMapsAPIWrapper, LatLng} from '@agm/core';
+
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -27,6 +29,8 @@ import { MapService } from "./map/map.service";
     BrowserModule,
     CommonModule,
     FormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyBq7O9NfMbfQxawyUOjDDXi2ie--Cdje3s'   // Should this really be public? Probably no
     })
