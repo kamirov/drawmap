@@ -1,1 +1,7 @@
-<span (click)="handleToggleClick()">{{ controls.drawEnabled ? 'Stop drawing' : 'Start drawing' }}</span>
+<div class="container">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="handleToggleClick()"
+  >{{ controls.drawEnabled ? 'Stop drawing' : 'Start drawing' }}</button>
+</div>
