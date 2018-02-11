@@ -73,10 +73,8 @@ export class MapComponent implements OnInit {
   }
 
   private pollForRouteComplete() {
-    console.log('polling');
     if (this.mapService.isRoutingFinished()) {
       this.setLegs();
-      console.log('routing finished');
       this.disableDraw();
     }
   }

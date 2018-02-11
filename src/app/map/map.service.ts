@@ -94,7 +94,7 @@ export class MapService {
     this.line = await this.googleMapsAPIWrapper.createPolyline({
       map: this.map,
       clickable: false,
-      strokeColor:"#00",
+      strokeColor: "#000000",
       strokeOpacity: 0.6,
       strokeWeight: 4
     });
@@ -123,8 +123,6 @@ export class MapService {
    */
   startRouteCreate() {
     this.mapState = mapStates.routing;
-
-    this.line.setOptions({ strokeOpacity: 0.3 });
 
     this.directionsDisplay = new google.maps.DirectionsRenderer({
       suppressMarkers: true,
@@ -155,25 +153,11 @@ export class MapService {
     }, (response, status) => {
       if (status === 'OK') {
 
-        console.log(response);
+        this.line.setOptions({ strokeOpacity: 0.3 });
         this.directionsDisplay.setDirections(response);
 
-        this.setDistance(response.routes[0].legs)
-
-        // Add start and end markers
-        this.markers.start = new google.maps.Marker({
-          position: waypoints[0].location,
-          map: this.map,
-          title: "Start",
-          label: 0,
-          animation: google.maps.Animation.DROP,
-        });
-        this.markers.end = new google.maps.Marker({
-          position: waypoints[waypoints.length-1].location,
-          map: this.map,
-          title: `End (${this.routeDistance}km)`,
-          animation: google.maps.Animation.DROP,
-        });
+        let routeDistance = this.setDistance(response.routes[0].legs)
+        this.addMarkers(waypoints[0].location, waypoints[waypoints.length-1].location, routeDistance)
 
       } else {
         window.alert('Directions request failed due to ' + status)
@@ -185,9 +169,7 @@ export class MapService {
     this.setMapUrls(waypoints);
   }
 
-
   public setDistance(legs: any) {
-    console.log(legs);
     this.routeDistance = legs.reduce((distance, leg) => {
       return distance + leg.distance.value;
     }, 0);
@@ -195,7 +177,9 @@ export class MapService {
     // Convert m to km
     this.routeDistance /= 1000;
     this.routeDistance = +this.routeDistance.toFixed(1);
-    console.log(this.routeDistance);
+
+    // Eh?
+    return this.routeDistance;
   }
 
 
@@ -252,9 +236,6 @@ export class MapService {
       this.mapUrls[0] += '&origin=' + waypoints[0].location.lat() + ',' + waypoints[0].location.lng();
       this.mapUrls[0] += '&destination=' + waypoints[waypoints.length-1].location.lat() + ',' + waypoints[waypoints.length-1].location.lng();
     }
-
-    console.log(this.mapUrls[0]);
-    console.log(this.mapUrls[1]);
   }
 
   private async getWaypoints() {
@@ -308,5 +289,26 @@ export class MapService {
       this.directionsDisplay.setMap(null);
       this.directionsDisplay = null;
     }
+  }
+
+  private addMarkers(start, end, distance) {
+    this.markers.start = new google.maps.Marker({
+      position: start,
+      map: this.map,
+      title: "Start",
+      animation: google.maps.Animation.DROP,
+    });
+    this.markers.end = new google.maps.Marker({
+      position: end,
+      map: this.map,
+      title: `End`,
+      animation: google.maps.Animation.DROP,
+    });
+
+    let infoWindow = new google.maps.InfoWindow({
+      content: distance + 'km'
+    });
+
+    infoWindow.open(this.map, this.markers.end);
   }
 }
