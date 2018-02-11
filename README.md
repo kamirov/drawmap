@@ -10,6 +10,8 @@ DrawMap is an Angular app that converts drawings on a Google map into a walkable
 1. Run `ng serve` to turn on the development server (you'll need the Angular CLI installed globally).
  
 ## To-(but-probably-won't)-do
+- Geolocate the user. Right now the app is centered on Toronto, Canada, but those initial coordinates should come 
+from wherever the user is located.
 - Allow user to specify number of legs (increasing route-to-drawing fidelity by specifying more legs).
 - Add touch support to make app functional on mobile devices (probably `Hammer.JS`).
 - Clean up production build and deployment (currently using the built-in development server).
