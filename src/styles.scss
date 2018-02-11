@@ -1,7 +1,13 @@
 @import '~@angular/material/prebuilt-themes/pink-bluegrey.css';
 
-html {
+body {
   text-align: center;
   font-family: Roboto, "Helvetica Neue", sans-serif;
   background: #ebebeb;
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  margin-top: 0;
 }
