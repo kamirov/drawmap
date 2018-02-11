@@ -131,18 +131,6 @@ export class MapService {
     });
     directionsDisplay.setMap(this.map);
 
-    // Add start and end markers
-    this.markers.start = new google.maps.Marker({
-      position: waypoints[0].location,
-      map: this.map,
-      title: "Start"
-    });
-    this.markers.end = new google.maps.Marker({
-      position: waypoints[waypoints.length-1].location,
-      map: this.map,
-      title: "End"
-    });
-
     // Add route
     directionsService.route({
       origin: waypoints[0].location,
@@ -157,6 +145,22 @@ export class MapService {
         directionsDisplay.setDirections(response);
 
         this.setDistance(response.routes[0].legs)
+
+
+        // Add start and end markers
+        this.markers.start = new google.maps.Marker({
+          position: waypoints[0].location,
+          map: this.map,
+          title: "Start",
+          label: 0,
+          animation: google.maps.Animation.DROP,
+        });
+        this.markers.end = new google.maps.Marker({
+          position: waypoints[waypoints.length-1].location,
+          map: this.map,
+          title: `End (${this.routeDistance}km)`,
+          animation: google.maps.Animation.DROP,
+        });
 
       } else {
         window.alert('Directions request failed due to ' + status)
