@@ -52,6 +52,7 @@ export class MapComponent implements OnInit {
   private async enableDraw() {
     this.startPollingForRouteComplete();
 
+    this.clearLegs();
     this.controls.drawEnabled = true;
     this.mapService.enableDraw();
     }
@@ -81,5 +82,9 @@ export class MapComponent implements OnInit {
 
   private setLegs() {
     this.legs = this.mapService.mapUrls;
+  }
+
+  private clearLegs() {
+    this.legs = [null, null];
   }
 }
