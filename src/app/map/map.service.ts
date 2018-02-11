@@ -94,7 +94,11 @@ export class MapService {
    * @param e
    */
   draw(e) {
-    this.line.getPath().push(e.latLng);
+    if (this.line) {
+      this.line.getPath().push(e.latLng);
+    } else {
+      console.warn('No polyline object');
+    }
   }
 
 
@@ -171,7 +175,7 @@ export class MapService {
 
     // Convert m to km
     this.routeDistance /= 1000;
-    this.routeDistance.toFixed(1);
+    this.routeDistance = +this.routeDistance.toFixed(1);
     console.log(this.routeDistance);
   }
 
