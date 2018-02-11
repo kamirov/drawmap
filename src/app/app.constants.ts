@@ -1,4 +1,6 @@
-export const maxWaypointsCount: number = 23;
+// Google's limitation is 23, but their map client's limitation is 10, so we use 20 and split the journey into 2 legs
+export const maxWaypointsCount: number = 20;
+export const maxWaypointsPerLeg: number = 10;
 
 export enum mapControlEvents {
   toggleDraw = 'toggleDraw',

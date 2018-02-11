@@ -14,6 +14,7 @@ export class MapComponent implements OnInit {
   lng: number;
   zoom: number;
   controls: MapControls;
+  drawAndRoutePoll;
 
   constructor(private mapService: MapService) { }
 
@@ -23,23 +24,10 @@ export class MapComponent implements OnInit {
     this.zoom = 14;
 
     this.controls = <MapControls>{
-      drawEnabled: false,
-      routeType: routeTypes.walking
-    }
+      drawEnabled: false
+    };
 
     this.mapService.init('map', this.lat, this.lng, this.zoom)
-    //
-    // this.points = [{
-    //   lat: this.lat,
-    //   lng: this.lng
-    // }, {
-    //   lat: this.lat+1,
-    //   lng: this.lng+1
-    // }, {
-    //   lat: this.lat-1,
-    //   lng: this.lng-1
-    // }]
-
   }
 
   handleControlsChange(event) {
@@ -58,13 +46,34 @@ export class MapComponent implements OnInit {
     }
   }
 
-  private enableDraw() {
+  private async enableDraw() {
+    this.startPollingForRouteComplete();
+
     this.controls.drawEnabled = true;
     this.mapService.enableDraw();
-  }
+    }
 
   private disableDraw() {
+    this.stopPollingForRouteComplete();
+
     this.controls.drawEnabled = false;
     this.mapService.disableDraw();
+
+  }
+
+  private startPollingForRouteComplete() {
+    this.drawAndRoutePoll = setInterval(this.pollForRouteComplete.bind(this), 100)
+  }
+
+  private stopPollingForRouteComplete() {
+    clearInterval(this.drawAndRoutePoll);
+  }
+
+  private pollForRouteComplete() {
+    console.log('polling');
+    if (this.mapService.isRoutingFinished()) {
+      console.log('routing finished');
+      this.disableDraw();
+    }
   }
 }

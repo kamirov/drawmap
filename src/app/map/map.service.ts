@@ -1,15 +1,20 @@
 import { Injectable } from '@angular/core';
+
 import {GoogleMap, MapOptions, Polyline} from "@agm/core/services/google-maps-types";
 import {GoogleMapsAPIWrapper, LatLng} from "@agm/core";
-import {mapStates, maxWaypointsCount} from "../app.constants";
+
+import {mapStates, maxWaypointsCount, maxWaypointsPerLeg} from "../app.constants";
 import {MapListeners} from "./map-listeners";
 import {MapMarkers} from "./map-markers";
 const linspace = require("linspace");
+
 declare var google: any;
 declare var require: any;
 
 @Injectable()
 export class MapService {
+
+  public routeDistance: number;
 
   protected map: GoogleMap;
   protected mapState: mapStates;
@@ -22,15 +27,24 @@ export class MapService {
     start: null,
     end: null
   };
+  protected mapUrls: string[] = [null, null];
 
   constructor(private googleMapsAPIWrapper: GoogleMapsAPIWrapper) {}
 
+  /**
+   * Initializes GMap and service
+   * @param elementId
+   * @param lat
+   * @param lng
+   * @param zoom
+   */
   async init(elementId, lat, lng, zoom) {
     let mapOptions: MapOptions = {
       center: <LatLng>{lat, lng},
       zoom: zoom,
       clickableIcons: false,
-      draggable: false
+      streetViewControl: false,
+      fullscreenControl: false
     };
 
     this.googleMapsAPIWrapper.createMap(document.getElementById(elementId), mapOptions);
@@ -38,11 +52,30 @@ export class MapService {
     this.mapState = mapStates.empty;
   }
 
+
+  /**
+   * Checks if routing is finished (duh)
+   * @returns {boolean}
+   */
+  isRoutingFinished() {
+    return this.mapState === mapStates.routed;
+  }
+
+
+  /**
+   * Prepares map to start drawing
+   */
   enableDraw() {
     this.mapState = mapStates.drawable;
+    this.map.setOptions({ draggable: false });
     this.listeners.mousedown = this.map.addListener('mousedown', this.startDraw.bind(this));
   }
 
+
+  /**
+   * Starts drawing a line on the map based on user's mouse position
+   * @returns {Promise<void>}
+   */
   async startDraw() {
     this.mapState = mapStates.drawing;
     this.line = await this.googleMapsAPIWrapper.createPolyline({
@@ -55,10 +88,19 @@ export class MapService {
     this.listeners.mousedown = this.map.addListener('mousedown', this.startRouteCreate.bind(this));
   }
 
+
+  /**
+   * Stores current cursor's coordinates on line
+   * @param e
+   */
   draw(e) {
     this.line.getPath().push(e.latLng);
   }
 
+
+  /**
+   * Prepares map to create a route based off drawing
+   */
   startRouteCreate() {
     this.mapState = mapStates.routing;
     this.listeners.mousemove.remove();
@@ -67,17 +109,20 @@ export class MapService {
     this.createRoute();
   }
 
+
+  /**
+   * Creates a route, adds start-end markers
+   * @returns {Promise<void>}
+   */
   async createRoute() {
     let waypoints: any = await this.getWaypoints();
 
+    // Feeling like these should be declared in init()
     let directionsService = new google.maps.DirectionsService;
     let directionsDisplay = new google.maps.DirectionsRenderer({
       suppressMarkers: true
-    })
+    });
     directionsDisplay.setMap(this.map);
-
-    console.log(waypoints);
-    console.log(waypoints[0])
 
     // Add start and end markers
     this.markers.start = new google.maps.Marker({
@@ -98,19 +143,95 @@ export class MapService {
       waypoints: waypoints,
       travelMode: 'WALKING',
       optimizeWaypoints: false
-    }, function(response, status) {
+    }, (response, status) => {
       if (status === 'OK') {
+
+        console.log(response);
         directionsDisplay.setDirections(response);
+
+        this.setDistance(response.routes[0].legs)
+
       } else {
         window.alert('Directions request failed due to ' + status)
       }
     });
 
-
     this.line = null;
-
     this.mapState = mapStates.routed;
-    this.disableDraw();
+
+    this.setMapUrls(waypoints);
+  }
+
+
+  public setDistance(legs: any) {
+    console.log(legs);
+    this.routeDistance = legs.reduce((distance, leg) => {
+      return distance + leg.distance.value;
+    }, 0);
+
+    // Convert m to km
+    this.routeDistance /= 1000;
+    this.routeDistance.toFixed(1);
+    console.log(this.routeDistance);
+  }
+
+
+  /**
+   * Generates 2 URLs for each half of the journey
+   * @param waypoints
+   */
+  private setMapUrls(waypoints) {
+    this.mapUrls = [null, null];
+
+    let mapUrl =  'https://www.google.com/maps/dir/?api=1';
+
+    // Add travel mode
+    mapUrl += '&travelmode=walking';
+
+    // Add waypoints
+    mapUrl += '&waypoints=';
+
+    // For short routes, don't divide per leg. For long routes, divide in two
+    if (waypoints.length > maxWaypointsPerLeg) {
+      // Leg 1
+      this.mapUrls[0] = mapUrl;
+      for (let i = 1; i < maxWaypointsPerLeg-1; i++) {
+        this.mapUrls[0] += waypoints[i].location.lat() + ',' + waypoints[i].location.lng() + '|';
+      }
+      this.mapUrls[0] = this.mapUrls[0].slice(0,-1);    // Remove trailing '|'
+
+      // Leg 2
+      this.mapUrls[1] = mapUrl;
+      for (let i = maxWaypointsPerLeg; i < waypoints.length; i++) {
+        this.mapUrls[1] += waypoints[i].location.lat() + ',' + waypoints[i].location.lng() + '|';
+      }
+      this.mapUrls[1] = this.mapUrls[1].slice(0,-1);    // Remove trailing '|'
+
+      // Add start
+      this.mapUrls[0] += '&origin=' + waypoints[0].location.lat() + ',' + waypoints[0].location.lng();
+      this.mapUrls[1] += '&origin=' + waypoints[maxWaypointsPerLeg-1].location.lat() + ',' + waypoints[maxWaypointsPerLeg-1].location.lng();
+
+      // Add end
+      this.mapUrls[0] += '&destination=' + waypoints[maxWaypointsPerLeg-1].location.lat() + ',' + waypoints[maxWaypointsPerLeg-1].location.lng();
+      this.mapUrls[1] += '&destination=' + waypoints[waypoints.length-1].location.lat() + ',' + waypoints[waypoints.length-1].location.lng();
+
+    } else {
+
+      this.mapUrls[0] = mapUrl;
+
+      // Waypoints
+      for (let i = 1; i < waypoints.length-1; i++) {
+        this.mapUrls[0] += waypoints[i].location.lat() + ',' + waypoints[i].location.lng() + '|';
+      }
+      this.mapUrls[0] = this.mapUrls[0].slice(0,-1);    // Remove trailing '|'
+
+      // Start and end
+      this.mapUrls[0] += '&origin=' + waypoints[0].location.lat() + ',' + waypoints[0].location.lng();
+      this.mapUrls[0] += '&destination=' + waypoints[waypoints.length-1].location.lat() + ',' + waypoints[waypoints.length-1].location.lng();
+    }
+
+    console.log(this.mapUrls[0]);
+    console.log(this.mapUrls[1]);
   }
 
   private async getWaypoints() {
@@ -132,5 +253,7 @@ export class MapService {
     if (this.listeners.mousemove) {
       this.listeners.mousemove.remove();
     }
+
+    this.map.setOptions({ draggable: true });
   }
 }
