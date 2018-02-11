@@ -21,7 +21,8 @@ export class MapService {
   protected mapState: mapStates;
   protected listeners: MapListeners = {
     mousedown: null,
-    mousemove: null
+    mouseup: null,
+    mousemove: null,
   };
   protected line: Polyline;
   protected markers: MapMarkers = {
@@ -125,6 +126,10 @@ export class MapService {
       this.listeners.mousedown.remove();
     }
 
+    if (this.listeners.mouseup) {
+      this.listeners.mouseup.remove();
+    }
+
     this.map.setOptions({
       draggable: true,
       zoomControl: true
@@ -148,7 +153,7 @@ export class MapService {
 
     this.listeners.mousedown.remove();
     this.listeners.mousemove = this.map.addListener('mousemove', this.draw.bind(this));
-    this.listeners.mousedown = this.map.addListener('mousedown', this.startRouteCreate.bind(this));
+    this.listeners.mouseup = this.map.addListener('mouseup', this.startRouteCreate.bind(this));
   }
 
 
@@ -178,6 +183,7 @@ export class MapService {
 
     this.listeners.mousemove.remove();
     this.listeners.mousedown.remove();
+    this.listeners.mouseup.remove();
 
     this.createRoute();
   }
