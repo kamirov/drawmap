@@ -43,6 +43,7 @@ export class MapComponent implements OnInit {
 
   toggleDraw() {
     if (this.controls.drawEnabled) {
+      this.mapService.clearMap();
       this.disableDraw();
     } else {
       this.enableDraw();

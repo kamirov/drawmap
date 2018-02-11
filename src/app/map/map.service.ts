@@ -28,10 +28,10 @@ export class MapService {
     start: null,
     end: null
   };
-  private directionsService: any;
-  private directionsDisplay: any;
+  protected directionsService: any;
+  protected directionsDisplay: any;
 
-  constructor(private googleMapsAPIWrapper: GoogleMapsAPIWrapper) {}
+  constructor(protected googleMapsAPIWrapper: GoogleMapsAPIWrapper) {}
 
   /**
    * Initializes GMap and service
@@ -83,12 +83,59 @@ export class MapService {
     this.listeners.mousedown = this.map.addListener('mousedown', this.startDraw.bind(this));
   }
 
+  clearMap() {
+    if (this.markers.start) {
+      this.markers.start.setMap(null);
+      this.markers.start = null;
+    }
+
+    if (this.markers.end) {
+      this.markers.end.setMap(null);
+      this.markers.end = null;
+    }
+
+    if (this.markers.end) {
+      this.markers.end.setMap(null);
+      this.markers.end = null;
+    }
+
+    if (this.line) {
+      this.line.setMap(null);
+      this.line = null;
+    }
+
+    if (this.directionsDisplay) {
+      this.directionsDisplay.setMap(null);
+      this.directionsDisplay = null;
+    }
+  }
+
+
+  /**
+   * Disable drawing mode, reset map state
+   */
+  disableDraw() {
+    this.mapState = mapStates.empty;
+
+    if (this.listeners.mousemove) {
+      this.listeners.mousemove.remove();
+    }
+
+    if (this.listeners.mousedown) {
+      this.listeners.mousedown.remove();
+    }
+
+    this.map.setOptions({
+      draggable: true,
+      zoomControl: true
+    });
+  }
 
   /**
    * Starts drawing a line on the map based on user's mouse position
    * @returns {Promise<void>}
    */
-  async startDraw() {
+  protected async startDraw() {
     this.mapState = mapStates.drawing;
 
     this.line = await this.googleMapsAPIWrapper.createPolyline({
@@ -109,7 +156,7 @@ export class MapService {
    * Stores current cursor's coordinates on line
    * @param e
    */
-  draw(e) {
+  protected draw(e) {
     if (this.line) {
       this.line.getPath().push(e.latLng);
     } else {
@@ -121,7 +168,7 @@ export class MapService {
   /**
    * Prepares map to create a route based off drawing
    */
-  startRouteCreate() {
+  protected startRouteCreate() {
     this.mapState = mapStates.routing;
 
     this.directionsDisplay = new google.maps.DirectionsRenderer({
@@ -140,7 +187,7 @@ export class MapService {
    * Creates a route, adds start-end markers
    * @returns {Promise<void>}
    */
-  async createRoute() {
+  protected async createRoute() {
     let waypoints: any = await this.getWaypoints();
 
     // Add route
@@ -169,7 +216,7 @@ export class MapService {
     this.setMapUrls(waypoints);
   }
 
-  public setDistance(legs: any) {
+  protected setDistance(legs: any) {
     this.routeDistance = legs.reduce((distance, leg) => {
       return distance + leg.distance.value;
     }, 0);
@@ -185,9 +232,10 @@ export class MapService {
 
   /**
    * Generates 2 URLs for each half of the journey
+   * TODO: This method should really be cleaned up
    * @param waypoints
    */
-  private setMapUrls(waypoints) {
+  protected setMapUrls(waypoints) {
     this.mapUrls = [null, null];
 
     let mapUrl =  'https://www.google.com/maps/dir/?api=1';
@@ -238,7 +286,12 @@ export class MapService {
     }
   }
 
-  private async getWaypoints() {
+
+  /**
+   * Convert polyline to waypoints
+   * @returns {Promise<void>}
+   */
+  protected async getWaypoints() {
     let points: any = await this.line.getPath();
 
     let waypointsCount = Math.min(points.length, maxWaypointsCount)
@@ -252,46 +305,14 @@ export class MapService {
     }));
   }
 
-  disableDraw() {
-    this.mapState = mapStates.empty;
-    if (this.listeners.mousemove) {
-      this.listeners.mousemove.remove();
-    }
 
-    this.map.setOptions({
-      draggable: true,
-      zoomControl: true
-    });
-  }
-
-  private clearMap() {
-    if (this.markers.start) {
-      this.markers.start.setMap(null);
-      this.markers.start = null;
-    }
-
-    if (this.markers.end) {
-      this.markers.end.setMap(null);
-      this.markers.end = null;
-    }
-
-    if (this.markers.end) {
-      this.markers.end.setMap(null);
-      this.markers.end = null;
-    }
-
-    if (this.line) {
-      this.line.setMap(null);
-      this.line = null;
-    }
-
-    if (this.directionsDisplay) {
-      this.directionsDisplay.setMap(null);
-      this.directionsDisplay = null;
-    }
-  }
-
-  private addMarkers(start, end, distance) {
+  /**
+   * Add start and end markers
+   * @param start
+   * @param end
+   * @param distance
+   */
+  protected addMarkers(start, end, distance) {
     this.markers.start = new google.maps.Marker({
       position: start,
       map: this.map,
