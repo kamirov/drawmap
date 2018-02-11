@@ -1,5 +1,6 @@
 <div class="container">
   <dm-map-controls
+    *ngIf="mapInitialized"
     [controls]="controls"
     (controlsChange)="handleControlsChange($event)"
   ></dm-map-controls>

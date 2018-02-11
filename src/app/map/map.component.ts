@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {MapService} from "./map.service";
-import {mapControlEvents, routeTypes} from "../app.constants";
+import {mapControlEvents} from "../app.constants";
 import {MapControls} from "./map-controls/map-controls";
 
 @Component({
@@ -15,12 +15,13 @@ export class MapComponent implements OnInit {
   zoom: number;
   legs: string[];
   controls: MapControls;
+  mapInitialized: boolean;
 
   private drawAndRoutePoll;
 
   constructor(private mapService: MapService) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.lat = 43.6532;
     this.lng = -79.3832;
     this.zoom = 14;
@@ -30,7 +31,8 @@ export class MapComponent implements OnInit {
       drawEnabled: false
     };
 
-    this.mapService.init('map', this.lat, this.lng, this.zoom)
+    await this.mapService.init('map', this.lat, this.lng, this.zoom)
+    this.mapInitialized = true;
   }
 
   handleControlsChange(event) {

@@ -196,30 +196,32 @@ export class MapService {
   protected async createRoute() {
     let waypoints: any = await this.getWaypoints();
 
-    // Add route
-    this.directionsService.route({
-      origin: waypoints[0].location,
-      destination: waypoints[waypoints.length-1].location,
-      waypoints: waypoints,
-      travelMode: 'WALKING',
-      optimizeWaypoints: false
-    }, (response, status) => {
-      if (status === 'OK') {
+    if (waypoints.length) {
+      // Add route
+      this.directionsService.route({
+        origin: waypoints[0].location,
+        destination: waypoints[waypoints.length-1].location,
+        waypoints: waypoints,
+        travelMode: 'WALKING',
+        optimizeWaypoints: false
+      }, (response, status) => {
+        if (status === 'OK') {
 
-        this.line.setOptions({ strokeOpacity: 0.3 });
-        this.directionsDisplay.setDirections(response);
+          this.line.setOptions({ strokeOpacity: 0.3 });
+          this.directionsDisplay.setDirections(response);
 
-        let routeDistance = this.setDistance(response.routes[0].legs)
-        this.addMarkers(waypoints[0].location, waypoints[waypoints.length-1].location, routeDistance)
+          let routeDistance = this.setDistance(response.routes[0].legs)
+          this.addMarkers(waypoints[0].location, waypoints[waypoints.length-1].location, routeDistance)
 
-      } else {
-        window.alert('Directions request failed due to ' + status)
-      }
-    });
+        } else {
+          window.alert('Directions request failed due to ' + status)
+        }
+      });
+
+      this.setMapUrls(waypoints);
+    }
 
     this.mapState = mapStates.routed;
-
-    this.setMapUrls(waypoints);
   }
 
   protected setDistance(legs: any) {
