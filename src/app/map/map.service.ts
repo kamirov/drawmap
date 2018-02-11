@@ -28,6 +28,8 @@ export class MapService {
     start: null,
     end: null
   };
+  private directionsService: any;
+  private directionsDisplay: any;
 
   constructor(private googleMapsAPIWrapper: GoogleMapsAPIWrapper) {}
 
@@ -47,9 +49,13 @@ export class MapService {
       fullscreenControl: false
     };
 
+    // Init map
     this.googleMapsAPIWrapper.createMap(document.getElementById(elementId), mapOptions);
     this.map = await this.googleMapsAPIWrapper.getNativeMap();
     this.mapState = mapStates.empty;
+
+    // Init directions
+    this.directionsService = new google.maps.DirectionsService;
   }
 
 
@@ -67,6 +73,9 @@ export class MapService {
    */
   enableDraw() {
     this.mapState = mapStates.drawable;
+
+    this.clearMap();
+
     this.map.setOptions({
       draggable: false,
       zoomControl: false
@@ -81,9 +90,13 @@ export class MapService {
    */
   async startDraw() {
     this.mapState = mapStates.drawing;
+
     this.line = await this.googleMapsAPIWrapper.createPolyline({
       map: this.map,
-      clickable: false
+      clickable: false,
+      strokeColor:"#00",
+      strokeOpacity: 0.6,
+      strokeWeight: 4
     });
 
     this.listeners.mousedown.remove();
@@ -110,6 +123,14 @@ export class MapService {
    */
   startRouteCreate() {
     this.mapState = mapStates.routing;
+
+    this.line.setOptions({ strokeOpacity: 0.3 });
+
+    this.directionsDisplay = new google.maps.DirectionsRenderer({
+      suppressMarkers: true,
+      map: this.map
+    });
+
     this.listeners.mousemove.remove();
     this.listeners.mousedown.remove();
 
@@ -124,15 +145,8 @@ export class MapService {
   async createRoute() {
     let waypoints: any = await this.getWaypoints();
 
-    // Feeling like these should be declared in init()
-    let directionsService = new google.maps.DirectionsService;
-    let directionsDisplay = new google.maps.DirectionsRenderer({
-      suppressMarkers: true
-    });
-    directionsDisplay.setMap(this.map);
-
     // Add route
-    directionsService.route({
+    this.directionsService.route({
       origin: waypoints[0].location,
       destination: waypoints[waypoints.length-1].location,
       waypoints: waypoints,
@@ -142,10 +156,9 @@ export class MapService {
       if (status === 'OK') {
 
         console.log(response);
-        directionsDisplay.setDirections(response);
+        this.directionsDisplay.setDirections(response);
 
         this.setDistance(response.routes[0].legs)
-
 
         // Add start and end markers
         this.markers.start = new google.maps.Marker({
@@ -167,7 +180,6 @@ export class MapService {
       }
     });
 
-    this.line = null;
     this.mapState = mapStates.routed;
 
     this.setMapUrls(waypoints);
@@ -269,5 +281,32 @@ export class MapService {
       draggable: true,
       zoomControl: true
     });
+  }
+
+  private clearMap() {
+    if (this.markers.start) {
+      this.markers.start.setMap(null);
+      this.markers.start = null;
+    }
+
+    if (this.markers.end) {
+      this.markers.end.setMap(null);
+      this.markers.end = null;
+    }
+
+    if (this.markers.end) {
+      this.markers.end.setMap(null);
+      this.markers.end = null;
+    }
+
+    if (this.line) {
+      this.line.setMap(null);
+      this.line = null;
+    }
+
+    if (this.directionsDisplay) {
+      this.directionsDisplay.setMap(null);
+      this.directionsDisplay = null;
+    }
   }
 }

@@ -24,7 +24,6 @@ export class MapComponent implements OnInit {
     this.lat = 43.6532;
     this.lng = -79.3832;
     this.zoom = 14;
-    // this.legs = ['a', 'b'];
     this.legs = [null, null];
 
     this.controls = <MapControls>{
