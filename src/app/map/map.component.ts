@@ -13,8 +13,10 @@ export class MapComponent implements OnInit {
   lat: number;
   lng: number;
   zoom: number;
+  legs: string[];
   controls: MapControls;
-  drawAndRoutePoll;
+
+  private drawAndRoutePoll;
 
   constructor(private mapService: MapService) { }
 
@@ -22,6 +24,8 @@ export class MapComponent implements OnInit {
     this.lat = 43.6532;
     this.lng = -79.3832;
     this.zoom = 14;
+    // this.legs = ['a', 'b'];
+    this.legs = [null, null];
 
     this.controls = <MapControls>{
       drawEnabled: false
@@ -72,8 +76,13 @@ export class MapComponent implements OnInit {
   private pollForRouteComplete() {
     console.log('polling');
     if (this.mapService.isRoutingFinished()) {
+      this.setLegs();
       console.log('routing finished');
       this.disableDraw();
     }
+  }
+
+  private setLegs() {
+    this.legs = this.mapService.mapUrls;
   }
 }

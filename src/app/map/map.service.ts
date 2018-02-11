@@ -15,6 +15,7 @@ declare var require: any;
 export class MapService {
 
   public routeDistance: number;
+  public mapUrls: string[] = [null, null];
 
   protected map: GoogleMap;
   protected mapState: mapStates;
@@ -27,7 +28,6 @@ export class MapService {
     start: null,
     end: null
   };
-  protected mapUrls: string[] = [null, null];
 
   constructor(private googleMapsAPIWrapper: GoogleMapsAPIWrapper) {}
 
@@ -67,7 +67,10 @@ export class MapService {
    */
   enableDraw() {
     this.mapState = mapStates.drawable;
-    this.map.setOptions({ draggable: false });
+    this.map.setOptions({
+      draggable: false,
+      zoomControl: false
+    });
     this.listeners.mousedown = this.map.addListener('mousedown', this.startDraw.bind(this));
   }
 
@@ -258,6 +261,9 @@ export class MapService {
       this.listeners.mousemove.remove();
     }
 
-    this.map.setOptions({ draggable: true });
+    this.map.setOptions({
+      draggable: true,
+      zoomControl: true
+    });
   }
 }

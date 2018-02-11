@@ -1,3 +1,16 @@
-<p>
-  share works!
-</p>
+<div class="container" *ngIf="legs[0]">
+  <span>Route Links:</span>
+  <a
+    mat-raised-button
+    color="accent"
+    href="{{legs[0]}}"
+    target="_blank"
+  >{{ legs[1] ? 'Leg 1' : 'Full Route' }}</a>
+  <a
+    *ngIf="legs[1]"
+    mat-raised-button
+    color="accent"
+    href="{{legs[1]}}"
+    target="_blank"
+  >Leg 2</a>
+</div>

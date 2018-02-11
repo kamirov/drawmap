@@ -1,6 +1,8 @@
-<dm-map-controls
-  [controls]="controls"
-  (controlsChange)="handleControlsChange($event)"
-></dm-map-controls>
-<div id="map"></div>
-<dm-share></dm-share>
+<div class="container">
+  <dm-map-controls
+    [controls]="controls"
+    (controlsChange)="handleControlsChange($event)"
+  ></dm-map-controls>
+  <div id="map"></div>
+  <dm-share [legs]="legs"></dm-share>
+</div>
