@@ -34,7 +34,7 @@ import { MapService } from "./map/map.service";
     MatCheckboxModule,
     MatToolbarModule,
     AgmCoreModule.forRoot({
-      apiKey: 'API_KEY'   // Should this really be public? Probably no
+      apiKey: 'API_KEY'   // TODO: This should come from the environment
     })
   ],
   providers: [

@@ -1,25 +1,27 @@
-# DrawMap
+# Drawmap
 
-DrawMap is an Angular app that converts drawings on a Google map into a walkable route. This route can be exported as
- a 2-leg journey (or 1 leg, if it’s short enough).
- 
-## Installation
-1. Clone repository.
-1. Run `npm install` from the app's root.
-1. Get a Google Maps API Key, put it into the appropriate spot in `app.module.ts`.
-1. Run `ng serve` to turn on the development server (you'll need the Angular CLI installed globally).
- 
-## To-(but-probably-won't)-do
-- Geolocate the user. Right now the app is centered on Toronto, Canada, but those initial coordinates should come 
-from wherever the user is located.
-- Allow user to specify number of legs (increasing route-to-drawing fidelity by specifying more legs).
-- Add touch support to make app functional on mobile devices (probably `Hammer.JS`).
-- Clean up production build and deployment (currently using the built-in development server).
-- Figure out a way to clear up the occasional spikes in the routes due to the waypoints. We ought to add 
-some heuristics for moving the waypoints around after they're generated, to make the resulting route look a bit 
-smoother.
-- Waypoints are currently generated as a uniform distribution, along the PolyLine. But this is not optimal, since if 
-the line curves in on itself, two adjacent points might be too close to one another to be of any use. There might be 
-an analytical solution for the optimal distribution of points along a given line, to ensure the least amount of loss 
-in accuracy when creating the route. If not, then some heuristics like "maintain at least X km from any other waypoint" 
-would probably lead to a nicer route. (This would be a fun problem to solve)
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.0.4.
+
+## Development server
+
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+## Code scaffolding
+
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+
+## Build
+
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+
+## Running unit tests
+
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+## Running end-to-end tests
+
+Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+
+## Further help
+
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
