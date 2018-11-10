@@ -3,7 +3,7 @@
 DrawMap is an Angular app that converts drawings on a Google map into a walkable route. This route can be exported as
  a 2-leg journey (or 1 leg, if it’s short enough).
  
-![DrawMap UI](https://raw.githubusercontent.com/kamirov/drawmap/master/cover.png)
+![DrawMap UI](https://raw.githubusercontent.com/kamirov/drawmap/master/drawmap-cover.png)
  
 ## Installation
 1. Clone repository.
